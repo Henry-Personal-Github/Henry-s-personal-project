@@ -1,0 +1,146 @@
+# bot.py
+
+import chatterbot
+from chatterbot inport Chatbot
+
+chatbot = ChatBot("Skye")
+
+exit_conditions = (":q", "quit", "exit")
+while True:
+    query = input("> ")
+    if query in exit_conditions:
+        break
+    else:
+        print(f"🪴 {chatbot.get_response(query)}")
+# bot.py
+
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+
+chatbot = ChatBot("Chatpot")
+
+trainer = ListTrainer(chatbot)
+trainer.train([
+    "What is Newton's First Law?",
+    "A body continues in the state of rest or uniform motion unless a resultant force acts on it",
+])
+trainer.train([
+    "What is Newton's Second Law?",
+    "Resultant force is directly proportionate to the rate of change of momentum and it acts in the direction of the rate of change of momentum",
+])
+trainer.train([
+    "What is Newton's Third Law?",
+    "When body A exerts a force on body B, body B exerts a force of equal magnitude and opposite direction of body A"
+])
+trainer.train([
+    "What is linear momentum?",
+    "It is the product of mass and velocity of the object",
+])
+trainer.train([
+    "What is impulse",
+    "product of the force and time taken for the force to act on the object",
+    ])
+trainer.train([
+    "What is the principle of Conservation of momentum?"
+    "The total momentum in a system remains constant, provided that no resultant force acts on the system",
+])
+trainer.train([
+    "What is the Principle of Conservation of energy",
+    "The total energy in an isolated system remains constant, energy cannot be destroyed or created in any process",
+])
+trainer.train([
+    "What is physical quantity",
+    "Quantities that can be measured",
+])
+trainer.train([
+    "What is a unit?",
+    "A particular physical quantity, defined and adopted by convention",
+])
+trainer.train([
+    "What are the S.I. base quantities?",
+    "Length:(m), mass:(kg), time:(s), current:(A), Amount of substance:(mol), Temperature:(K), luminous intensity:(cd-not tested) ",
+])
+trainer.train([
+    "What are derived quantities?",
+    "Quantities defined as products or quotients of the 7 S.I. base quantities",
+])
+trainer.train([
+    "What are homogenous base equations?"
+    "Equations where each terms have the same units",
+    ])
+trainer.train([
+    "What is order of magnitude?",
+    "Nearest power of 10",
+])
+trainer.train([
+    "What is an error?",
+    "Deviation of measurement from true value",
+])
+exit_conditions = (":q", "quit", "exit")
+while True:
+    query = input("> ")
+    if query in exit_conditions:
+        break
+    else:
+        print(f"🪴 {chatbot.get_response(query)}")
+# cleaner.py
+
+import re
+
+def remove_chat_metadata(chat_export_file):
+    date_time = r"(\d+\/\d+\/\d+,\s\d+:\d+)"  # e.g. "9/16/22, 06:34"
+    dash_whitespace = r"\s-\s"  # " - "
+    username = r"([\w\s]+)"  # e.g. "Martin"
+    metadata_end = r":\s"  # ": "
+    pattern = date_time + dash_whitespace + username + metadata_end
+
+    with open(chat_export_file, "r") as corpus_file:
+        content = corpus_file.read()
+    cleaned_corpus = re.sub(pattern, "", content)
+    return tuple(cleaned_corpus.split("\n"))
+
+if __name__ == "__main__":
+    print(remove_chat_metadata("chat.txt"))
+# cleaner.py
+
+# ...
+
+def remove_non_message_text(export_text_lines):
+    messages = export_text_lines[1:-1]
+
+    filter_out_msgs = ("<Media omitted>",)
+    return tuple((msg for msg in messages if msg not in filter_out_msgs))
+
+if __name__ == "__main__":
+    message_corpus = remove_chat_metadata("chat.txt")
+    cleaned_corpus = remove_non_message_text(message_corpus)
+    print(cleaned_corpus)
+# cleaner.py
+
+import re
+
+def clean_corpus(chat_export_file):
+    message_corpus = remove_chat_metadata(chat_export_file)
+    cleaned_corpus = remove_non_message_text(message_corpus)
+    return cleaned_corpus
+# bot.py
+
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+from cleaner import clean_corpus
+
+CORPUS_FILE = "chat.txt"
+
+chatbot = ChatBot("Chatpot")
+
+trainer = ListTrainer(chatbot)
+cleaned_corpus = clean_corpus(CORPUS_FILE)
+trainer.train(cleaned_corpus)
+
+exit_conditions = (":q", "quit", "exit")
+while True:
+    query = input("> ")
+    if query in exit_conditions:
+        break
+    else:
+        print(f"🪴 {chatbot.get_response(query)}")
